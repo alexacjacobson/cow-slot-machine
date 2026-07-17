@@ -7,22 +7,45 @@
   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500&family=Libre+Baskerville:ital@1&display=swap');
   html,body{ margin:0; background:#f4f1ea; }
   body{ display:flex; align-items:center; justify-content:center; min-height:100vh; padding:60px 20px; font-family:'Plus Jakarta Sans', sans-serif; }
-  .wrap{ width:100%; max-width:820px; }
+  .wrap{ width:100%; max-width:860px; }
   #outer{ position:relative; width:100%; overflow-x:hidden; overflow-y:visible; }
   #stage{ position:absolute; left:0; top:0; width:984px; height:579px; transform-origin: top left; overflow:visible; }
+  #mobile-header{ display:none; }
+
+  @media (max-width: 600px) {
+    html,body{ background:#000; }
+    body{ padding:32px 20px; align-items:flex-start; }
+    #mobile-header{
+      display:block;
+      font-family:'Libre Baskerville', serif;
+      font-style:italic;
+      font-size:32px;
+      color:#fff;
+      line-height:1.2;
+      margin-bottom:24px;
+    }
+    #nudge-group .label{ color:#fff; }
+    #nudge-group .arrow-box svg path{ stroke:#fff; fill:#fff; }
+  }
 
   .track img{ display:block; width:100%; aspect-ratio:1/1; object-fit:cover; }
 
   #result{
-    position:absolute; left:92px; top:388px; width:800px;
+    position:absolute; left:92px; top:393px; width:800px;
     text-align:center; font-size:22px; line-height:1.15; color:#000;
     white-space:normal;
+  }
+  @media (max-width: 600px) {
+    #result{ font-size:16px; white-space:normal; }
   }
 
   #bell-wrapper{ position:absolute; left:776px; top:377px; width:121px; height:202px;
                   cursor:pointer; padding:12px; margin:-12px; box-sizing:content-box;
                   touch-action:manipulation; -webkit-tap-highlight-color:transparent;
                   user-select:none; }
+  @media (max-width: 600px) {
+    #bell-wrapper{ transform: scale(1.22); transform-origin: bottom center; }
+  }
   #bell{ width:100%; height:100%; transform-origin:50% 8%; transition:transform .2s ease;
           pointer-events:none; }
   @media (hover: hover) and (pointer: fine) {
@@ -60,6 +83,7 @@
 </head>
 <body>
 <div class="wrap">
+  <div id="mobile-header">It's time to bring<br>the cows home!</div>
   <div id="outer">
     <div id="stage">
       <div style="position:absolute; left:7px; top:7px; width:970px; height:497px;">
@@ -122,7 +146,6 @@
       </div>
     </div>
   </div>
-  <footer>Your actual exported Bell / arrow / slot-border SVGs — ring the bell to spin.</footer>
 </div>
 
 <script>
@@ -178,7 +201,8 @@ const outer = document.getElementById('outer');
 const stage = document.getElementById('stage');
 function rescale(){
   const w = outer.getBoundingClientRect().width;
-  const scale = w / CANVAS_W;
+  const boost = window.innerWidth <= 600 ? 1.08 : 1;
+  const scale = (w / CANVAS_W) * boost;
   stage.style.transform = `scale(${scale})`;
   outer.style.height = (CANVAS_H * scale) + 'px';
 }
