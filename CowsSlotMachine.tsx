@@ -50,8 +50,9 @@ const MATCH_LINES = [
   "You know how to moo-ve \u2019em!",
 ]
 const PAIR_LINES = [
-  "One cow didn\u2019t get the memo.",
-  "Two cows, one rebel.",
+  "Close, but no full herd.",
+  "Just one cow away...",
+  "That cow never listens.",
 ]
 const MISS_LINES = [
   "Suppose they had other plans.",
