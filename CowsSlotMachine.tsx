@@ -52,7 +52,7 @@ const MATCH_LINES = [
 const PAIR_LINES = [
   "Close, but no full herd.",
   "Just one cow away...",
-  "That cow never listens.",
+  "smh, that cow never listens.",
 ]
 const MISS_LINES = [
   "Suppose they had other plans.",
