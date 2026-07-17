@@ -6,10 +6,10 @@
 <title>Herd the Cows — preview</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500&family=Libre+Baskerville:ital@1&display=swap');
-  html,body{ margin:0; background:#f4f1ea; }
+  html,body{ margin:0; background:#f4f1ea; overflow:hidden; }
   body{ display:flex; align-items:center; justify-content:center; min-height:100vh; padding:60px 20px; font-family:'Plus Jakarta Sans', sans-serif; }
   .wrap{ width:100%; max-width:860px; }
-  #outer{ position:relative; width:100%; overflow-x:hidden; overflow-y:visible; }
+  #outer{ position:relative; width:100%; overflow:visible; }
   #stage{ position:absolute; left:0; top:0; width:984px; height:579px; transform-origin: top left; overflow:visible; }
   @media (max-width: 600px) {
     #stage{ left:50%; transform-origin: top center; }
@@ -20,8 +20,10 @@
     html,body{
       background:#000 url('backgrounds/grass02.jpg') center center / cover no-repeat fixed;
     }
-    body{ padding:32px 12px; align-items:center; justify-content:center; min-height:100dvh; overflow-x:hidden; }
-    .wrap{ max-width:100%; }
+    html,body{ overflow:visible; }
+    body{ flex-direction:column; align-items:stretch; justify-content:flex-start; padding:0; min-height:100dvh; overflow-x:hidden; }
+    .wrap{ display:flex; flex-direction:column; flex:1; max-width:100%; min-height:100dvh; padding:32px 12px; box-sizing:border-box; }
+    #outer{ margin-top:auto; margin-bottom:auto; overflow-x:hidden; overflow-y:visible; }
     #mobile-header{
       display:block;
       font-family:'Libre Baskerville', serif;
