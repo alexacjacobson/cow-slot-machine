@@ -18,7 +18,7 @@
 //  - "Ring the bell" and the arrow are now one flex group sharing a single
 //    nudge animation, so they move in lockstep.
 
-import { useRef, useState, useCallback, useEffect } from "react"
+import { useRef, useState, useCallback, useEffect, useLayoutEffect } from "react"
 import { addPropertyControls, ControlType } from "framer"
 
 // ---------------------------------------------------------------------------
@@ -122,9 +122,11 @@ export default function CowsSlotMachine(props: {
   const trackRefs = useRef<(HTMLDivElement | null)[]>([null, null, null])
   const currentIndexRef = useRef<number[]>([0, 0, 0])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = outerRef.current
     if (!el) return
+    const w = el.getBoundingClientRect().width
+    if (w > 0) setScale(w / CANVAS_W)
     const ro = new ResizeObserver((entries) => {
       const w = entries[0].contentRect.width
       if (w > 0) setScale(w / CANVAS_W)
@@ -215,7 +217,8 @@ export default function CowsSlotMachine(props: {
         width: "100%",
         height: CANVAS_H * scale,
         position: "relative",
-        overflow: "visible",
+        overflowX: "hidden",
+        overflowY: "visible",
         ...style,
       }}
     >
@@ -236,13 +239,24 @@ export default function CowsSlotMachine(props: {
           0%   { transform: translateX(0); }
           100% { transform: translateX(22px); }
         }
+        .csm-bell-wrapper {
+          position: absolute;
+          cursor: pointer;
+          touch-action: manipulation;
+          -webkit-tap-highlight-color: transparent;
+          user-select: none;
+          padding: 12px;
+          margin: -12px;
+        }
         .csm-bell {
           transform-origin: 50% 8%;
           transition: transform 0.2s ease;
-          cursor: pointer;
+          pointer-events: none;
         }
-        .csm-bell:hover {
-          transform: scale(1.08) rotate(4deg);
+        @media (hover: hover) and (pointer: fine) {
+          .csm-bell-wrapper:hover .csm-bell {
+            transform: scale(1.08) rotate(4deg);
+          }
         }
         .csm-bell.csm-ringing {
           animation: csm-bell-ring ${BELL_RING_MS}ms ease-in-out 1;
@@ -347,23 +361,27 @@ export default function CowsSlotMachine(props: {
           {resultText}
         </div>
 
-        {/* bell — spin trigger. plain HTML div, so hover/ring are ordinary CSS transforms
-            with no XML transform attribute to conflict with, and overflow:visible
-            everywhere above means the hover-scale is never clipped. */}
+        {/* bell — spin trigger. wrapper div provides the enlarged hit area and touch
+            handling; inner csm-bell div receives the CSS animation/hover transform. */}
         <div
-          className={`csm-bell${isRinging ? " csm-ringing" : ""}`}
+          className="csm-bell-wrapper"
           onClick={handleRing}
           role="button"
           aria-label="Ring the bell to spin"
           style={{ position: "absolute", left: 776, top: 377, width: 121, height: 202 }}
         >
-          <svg
-            viewBox="0 0 121 202"
-            width="100%"
-            height="100%"
-            xmlns="http://www.w3.org/2000/svg"
-            dangerouslySetInnerHTML={{ __html: BELL_SVG_INNER }}
-          />
+          <div
+            className={`csm-bell${isRinging ? " csm-ringing" : ""}`}
+            style={{ width: "100%", height: "100%" }}
+          >
+            <svg
+              viewBox="0 0 121 202"
+              width="100%"
+              height="100%"
+              xmlns="http://www.w3.org/2000/svg"
+              dangerouslySetInnerHTML={{ __html: BELL_SVG_INNER }}
+            />
+          </div>
         </div>
 
         {/* "Ring the bell" + arrow — one group, one animation, so they move in sync */}
