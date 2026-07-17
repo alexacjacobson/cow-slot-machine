@@ -46,6 +46,16 @@
   #nudge-group .arrow-box{ width:47px; height:24px; }
 
   footer{ margin-top:20px; text-align:center; font-size:12px; color:#9c9484; }
+
+  @keyframes letterIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .result-letter {
+    display: inline-block;
+    opacity: 0;
+    animation: letterIn 0.4s ease-out forwards;
+  }
 </style>
 </head>
 <body>
@@ -134,9 +144,9 @@ const CANVAS_H = 579;
 
 document.documentElement.style.setProperty('--ring-ms', BELL_RING_MS + 'ms');
 
-const MATCH_LINES = ["Holy cow, you did it!", "Udderly perfect.", "You know how to moo-ve \u2019em!"];
-const PAIR_LINES = ["Close, but no full herd.", "Just one cow away...", "smh, that cow never listens."];
-const MISS_LINES = ["Suppose they had other plans.", "Busy grazing.", "Cows gone rogue."];
+const MATCH_LINES = ["holy cow, you did it", "udderly perfect", "you really know how to moo-ve 'em"];
+const PAIR_LINES = ["close, but no full herd", "just one cow away...", "smh, that cow never listens"];
+const MISS_LINES = ["busy grazing", "cows gone rogue", "guess they'd rather not"];
 function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
 function buildTrack(i){
@@ -219,7 +229,7 @@ bell.addEventListener('click', async ()=>{
   spinning = true;
   bellInner.classList.add('ringing');
   nudgeGroup.classList.add('paused');
-  result.textContent = "";
+  result.innerHTML = "";
 
   setTimeout(()=> bellInner.classList.remove('ringing'), BELL_RING_MS);
 
@@ -232,9 +242,23 @@ bell.addEventListener('click', async ()=>{
   const allMatch = results[0]===results[1] && results[1]===results[2];
   const anyPair = results[0]===results[1] || results[1]===results[2] || results[0]===results[2];
 
-  if(allMatch) result.textContent = pick(MATCH_LINES);
-  else if(anyPair) result.textContent = pick(PAIR_LINES);
-  else result.textContent = pick(MISS_LINES);
+  const line = allMatch ? pick(MATCH_LINES) : anyPair ? pick(PAIR_LINES) : pick(MISS_LINES);
+  result.innerHTML = "";
+  const frag = document.createDocumentFragment();
+  let letterIndex = 0;
+  for(const ch of line){
+    if(ch === " "){
+      frag.appendChild(document.createTextNode(" "));
+    } else {
+      const span = document.createElement("span");
+      span.className = "result-letter";
+      span.style.animationDelay = (letterIndex * 28) + "ms";
+      span.textContent = ch;
+      frag.appendChild(span);
+      letterIndex++;
+    }
+  }
+  result.appendChild(frag);
 
   spinning = false;
   nudgeGroup.classList.remove('paused');

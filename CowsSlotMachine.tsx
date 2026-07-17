@@ -45,19 +45,19 @@ const DEFAULT_IMAGES: string[] = [
 // frames. One is picked at random from the relevant set on each spin.
 // ---------------------------------------------------------------------------
 const MATCH_LINES = [
-  "Holy cow, you did it!",
-  "Udderly perfect.",
-  "You know how to moo-ve \u2019em!",
+  "holy cow, you did it",
+  "udderly perfect",
+  "you really know how to moo-ve 'em",
 ]
 const PAIR_LINES = [
-  "Close, but no full herd.",
-  "Just one cow away...",
-  "smh, that cow never listens.",
+  "close, but no full herd",
+  "just one cow away...",
+  "smh, that cow never listens",
 ]
 const MISS_LINES = [
-  "Suppose they had other plans.",
-  "Busy grazing.",
-  "Cows gone rogue.",
+  "busy grazing",
+  "cows gone rogue",
+  "guess they'd rather not",
 ]
 
 function pickLine(arr: string[]) {
@@ -114,6 +114,7 @@ export default function CowsSlotMachine(props: {
       : DEFAULT_IMAGES
 
   const [resultText, setResultText] = useState("")
+  const [spinCount, setSpinCount] = useState(0)
   const [isSpinning, setIsSpinning] = useState(false)
   const [isRinging, setIsRinging] = useState(false)
   const [scale, setScale] = useState(1)
@@ -205,6 +206,7 @@ export default function CowsSlotMachine(props: {
     else if (anyPair) setResultText(pickLine(PAIR_LINES))
     else setResultText(pickLine(MISS_LINES))
 
+    setSpinCount((c) => c + 1)
     setIsSpinning(false)
   }, [isSpinning, pool, spinReel])
 
@@ -238,6 +240,15 @@ export default function CowsSlotMachine(props: {
         @keyframes csm-nudge {
           0%   { transform: translateX(0); }
           100% { transform: translateX(22px); }
+        }
+        @keyframes csm-letter-in {
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .csm-letter {
+          display: inline-block;
+          opacity: 0;
+          animation: csm-letter-in 0.4s ease-out forwards;
         }
         .csm-bell-wrapper {
           position: absolute;
@@ -343,7 +354,7 @@ export default function CowsSlotMachine(props: {
           </div>
         ))}
 
-        {/* result text — Plus Jakarta Sans 32px, centered */}
+        {/* result text — Plus Jakarta Sans 22px, centered, letter wave-in */}
         <div
           style={{
             position: "absolute",
@@ -358,7 +369,23 @@ export default function CowsSlotMachine(props: {
             whiteSpace: "normal",
           }}
         >
-          {resultText}
+          {resultText && (
+            <span key={spinCount}>
+              {resultText.split("").map((ch, i) =>
+                ch === " " ? (
+                  " "
+                ) : (
+                  <span
+                    key={i}
+                    className="csm-letter"
+                    style={{ animationDelay: `${i * 28}ms` }}
+                  >
+                    {ch}
+                  </span>
+                )
+              )}
+            </span>
+          )}
         </div>
 
         {/* bell — spin trigger. wrapper div provides the enlarged hit area and touch
