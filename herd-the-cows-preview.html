@@ -11,11 +11,17 @@
   .wrap{ width:100%; max-width:860px; }
   #outer{ position:relative; width:100%; overflow-x:hidden; overflow-y:visible; }
   #stage{ position:absolute; left:0; top:0; width:984px; height:579px; transform-origin: top left; overflow:visible; }
+  @media (max-width: 600px) {
+    #stage{ left:50%; transform-origin: top center; }
+  }
   #mobile-header{ display:none; }
 
   @media (max-width: 600px) {
-    html,body{ background:#000; }
-    body{ padding:32px 20px; align-items:flex-start; }
+    html,body{
+      background:#000 url('backgrounds/grass02.jpg') center center / cover no-repeat fixed;
+    }
+    body{ padding:32px 12px; align-items:flex-start; overflow-x:hidden; }
+    .wrap{ max-width:100%; }
     #mobile-header{
       display:block;
       font-family:'Libre Baskerville', serif;
@@ -25,8 +31,6 @@
       line-height:1.2;
       margin-bottom:24px;
     }
-    #nudge-group .label{ color:#fff; }
-    #nudge-group .arrow-box svg path{ stroke:#fff; fill:#fff; }
   }
 
   .track img{ display:block; width:100%; aspect-ratio:1/1; object-fit:cover; }
@@ -70,6 +74,7 @@
   #nudge-group .arrow-box{ width:47px; height:24px; }
   @media (max-width: 600px) {
     #nudge-group .label{ color:#fff; }
+    #bell-wrapper{ transform: scale(1.15); transform-origin: bottom center; }
   }
 
   footer{ margin-top:20px; text-align:center; font-size:12px; color:#9c9484; }
@@ -205,9 +210,12 @@ const outer = document.getElementById('outer');
 const stage = document.getElementById('stage');
 function rescale(){
   const w = outer.getBoundingClientRect().width;
-  const boost = window.innerWidth <= 600 ? 1.08 : 1;
-  const scale = (w / CANVAS_W) * boost;
-  stage.style.transform = `scale(${scale})`;
+  const scale = w / CANVAS_W;
+  if(window.innerWidth <= 600){
+    stage.style.transform = `translate(-50%, 0) scale(${scale})`;
+  } else {
+    stage.style.transform = `scale(${scale})`;
+  }
   outer.style.height = (CANVAS_H * scale) + 'px';
 }
 new ResizeObserver(rescale).observe(outer);
