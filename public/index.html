@@ -12,15 +12,17 @@
   #outer{ position:relative; width:100%; overflow:visible; }
   #stage{ position:absolute; left:0; top:0; width:984px; height:579px; transform-origin: top left; overflow:visible; }
   @media (max-width: 600px) {
-    #stage{ left:50%; transform-origin: top center; background: url('backgrounds/grass02.jpg') center center / cover no-repeat; }
+    #stage{ left:50%; transform-origin: top center; }
   }
   #mobile-header{ display:none; }
   #moo-layer{ display:none; }
+  #bg-layer{ display:none; }
 
   @media (max-width: 600px) {
     html,body{
-      background:#000 url('backgrounds/grass02.jpg') center center / cover no-repeat;
+      background:#000;
     }
+    #bg-layer{ display:block; position:fixed; inset:0; background: url('backgrounds/grass02.jpg') center center / cover no-repeat; z-index:0; }
     html,body{ overflow:visible; }
     body{ flex-direction:column; align-items:stretch; justify-content:flex-start; padding:0; min-height:100dvh; overflow-x:hidden; }
     .wrap{ display:flex; flex-direction:column; flex:1; max-width:100%; min-height:100dvh; padding:40px 25px; box-sizing:border-box; position:relative; z-index:1; }
@@ -228,6 +230,7 @@
 </clipPath>
 </defs></svg></div></div>
 </div>
+<div id="bg-layer"></div>
 <div class="wrap">
   <div id="mobile-header">It's time to bring<br>the cows home!</div>
   <div id="outer">
