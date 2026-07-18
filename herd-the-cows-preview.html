@@ -109,7 +109,7 @@
     #nudge-arrow svg{ width:53px; height:38px; }
     #stage > div:first-child svg path[fill="white"],
     #stage > div:first-child svg rect[fill="white"] {
-      fill: rgba(255, 255, 255, 0.5);
+      fill: none;
     }
     #bell-wrapper{ transform: scale(1.15); transform-origin: bottom center; }
   }
@@ -435,7 +435,22 @@ bell.addEventListener('click', async ()=>{
 });
 
 // ── Moo bubble animation (mobile only) ──────────────────────────────────
-const MOO_POS = [[94,78],[66,73],[89,63],[89,14],[18,81],[36,75],[23,66],[26,20],[27,8],[63,4]];
+// Indices 0-3: moo-left (tail left → placed on RIGHT side of screen)
+// Indices 4-9: moo-right (tail right → placed on LEFT side of screen)
+// All positions safe: x keeps 67px bubble within viewport, y avoids slot frame (~49-73%)
+const MOO_POS = [
+  [73, 13],  // 0 moo-left  sky right
+  [68, 33],  // 1 moo-left  sky right-lower
+  [62, 82],  // 2 moo-left  grass right
+  [70, 91],  // 3 moo-left  grass right-lower
+  [4,  79],  // 4 moo-right grass far-left
+  [18, 88],  // 5 moo-right grass left
+  [35, 81],  // 6 moo-right grass left-center
+  [5,  20],  // 7 moo-right sky far-left
+  [20,  7],  // 8 moo-right sky left
+  [52,  3],  // 9 moo-right sky center
+];
+
 function mooDist(a,b){
   const dx=MOO_POS[a][0]-MOO_POS[b][0], dy=MOO_POS[a][1]-MOO_POS[b][1];
   return Math.sqrt(dx*dx+dy*dy);
@@ -443,33 +458,39 @@ function mooDist(a,b){
 
 if(window.matchMedia('(max-width:600px)').matches){
   const bubbles = Array.from({length:10}, (_,i)=>document.getElementById('moo-'+i));
-  // position bubbles
   bubbles.forEach((el,i)=>{
     el.style.left = MOO_POS[i][0]+'%';
     el.style.top  = MOO_POS[i][1]+'%';
   });
 
-  let active = [3, 7]; // start: sky-right + sky-left (well separated)
-  let slot = 0;
+  // Always show exactly one moo-left (0-3) and one moo-right (4-9)
+  let activeL = 0; // current moo-left index (0-3)
+  let activeR = 7; // current moo-right index (4-9)
+  let replaceLeft = true; // alternate which side gets replaced
 
-  // show initial pair
-  active.forEach(i => bubbles[i].style.opacity='1');
+  bubbles[activeL].style.opacity='1';
+  bubbles[activeR].style.opacity='1';
+
+  function pickFrom(pool, exclude, keepIdx){
+    let candidates = pool.filter(i=>i!==exclude&&mooDist(i,keepIdx)>20);
+    if(!candidates.length) candidates = pool.filter(i=>i!==exclude);
+    if(!candidates.length) candidates = pool;
+    return candidates[Math.floor(Math.random()*candidates.length)];
+  }
 
   function rotateMoo(){
-    const keep = active[1-slot];
-    const outIdx = active[slot];
-    // pick next: not either active, not too close to keep
-    let pool = Array.from({length:10},(_,i)=>i)
-      .filter(i=>i!==active[0]&&i!==active[1])
-      .filter(i=>mooDist(i,keep)>25);
-    if(!pool.length) pool = Array.from({length:10},(_,i)=>i).filter(i=>i!==active[0]&&i!==active[1]);
-    if(!pool.length) pool = [outIdx];
-    const newIdx = pool[Math.floor(Math.random()*pool.length)];
-    // crossfade simultaneously
-    bubbles[outIdx].style.opacity='0';
-    bubbles[newIdx].style.opacity='1';
-    active[slot] = newIdx;
-    slot = 1-slot;
+    if(replaceLeft){
+      const newL = pickFrom([0,1,2,3], activeL, activeR);
+      bubbles[activeL].style.opacity='0';
+      bubbles[newL].style.opacity='1';
+      activeL = newL;
+    } else {
+      const newR = pickFrom([4,5,6,7,8,9], activeR, activeL);
+      bubbles[activeR].style.opacity='0';
+      bubbles[newR].style.opacity='1';
+      activeR = newR;
+    }
+    replaceLeft = !replaceLeft;
     setTimeout(rotateMoo, 3700);
   }
   setTimeout(rotateMoo, 3700);
