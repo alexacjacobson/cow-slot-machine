@@ -103,12 +103,20 @@
     0%  { transform: translateX(0); }
     100%{ transform: translateX(22px); }
   }
+  @keyframes nudge-text-up{
+    0%  { transform: translateY(0); }
+    100%{ transform: translateY(-12px); }
+  }
+  @keyframes nudge-arc-up{
+    0%  { transform: translateY(0); }
+    100%{ transform: translateY(-12px); }
+  }
   @media (max-width: 600px) {
-    #nudge-label{ left:370px; top:509px; }
+    #bell-wrapper{ left:397px; top:448px; width:198px; height:331px; transform:none; transform-origin:initial; }
+    #nudge-label{ left:121px; top:818px; animation: nudge-text-up 0.9s ease-in-out infinite alternate; }
     #nudge-label svg{ width:264px; height:76px; }
-    #nudge-arrow{ left:642px; top:509px; }
-    #nudge-arrow svg{ width:106px; height:76px; }
-    #bell-wrapper{ transform: scale(1.15); transform-origin: bottom center; }
+    #nudge-arrow{ left:395px; top:800px; animation: nudge-arc-up 0.9s ease-in-out infinite alternate; }
+    #nudge-arrow svg{ width:106px; height:76px; transform: rotate(-55deg); transform-origin: left center; }
     /* Frame interior glass effect: backdrop-filter samples true composited content behind the
        element (including bg-layer), bypassing the Safari GPU layer compositing-against-black issue. */
     #stage > div:first-child {
