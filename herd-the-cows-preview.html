@@ -104,13 +104,20 @@
     100%{ transform: translateX(22px); }
   }
   @media (max-width: 600px) {
-    #nudge-label{ left:370px; top:507px; }
+    #nudge-label{ left:370px; top:509px; }
     #nudge-label svg{ width:264px; height:76px; }
-    #nudge-arrow{ left:642px; top:507px; }
+    #nudge-arrow{ left:642px; top:509px; }
     #nudge-arrow svg{ width:106px; height:76px; }
     #bell-wrapper{ transform: scale(1.15); transform-origin: bottom center; }
-    /* Frame interior: path 1 (white 25% tint) composites against body #000 on Safari GPU layers,
-       making the matting appear dark. Set to transparent so bg-layer (grass) shows through. */
+    /* Frame interior glass effect: backdrop-filter samples true composited content behind the
+       element (including bg-layer), bypassing the Safari GPU layer compositing-against-black issue. */
+    #stage > div:first-child {
+      background: rgba(255,255,255,0.18);
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+    }
+    /* The white 25% SVG path still composites against body #000 on Safari; suppress it so the
+       glass effect from backdrop-filter/background handles the tint instead. */
     #stage > div:first-child svg path:first-child { fill-opacity: 0; }
   }
 
@@ -141,6 +148,7 @@
 </style>
 </head>
 <body>
+<div id="bg-layer"></div>
 <div id="moo-layer">
   <div class="moo-bubble" id="moo-0"><div class="moo-inner"><svg viewBox="0 0 67 35" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_16_165)">
 <path d="M20.9656 21.4921V9.57208H22.0856L26.5656 16.0681H25.9416L30.4056 9.57208H31.5256V21.4921H30.2456V11.3001L30.6616 11.4601L26.2776 17.8121H26.2136L21.8456 11.4601L22.2456 11.3001V21.4921H20.9656ZM38.1806 21.6841C37.37 21.6841 36.634 21.4921 35.9726 21.1081C35.3113 20.7134 34.7833 20.1801 34.3886 19.5081C34.0046 18.8254 33.8126 18.0521 33.8126 17.1881C33.8126 16.3347 34.0046 15.5721 34.3886 14.9001C34.7726 14.2281 35.29 13.7001 35.9406 13.3161C36.602 12.9214 37.3486 12.7241 38.1806 12.7241C39.0126 12.7241 39.754 12.9161 40.4046 13.3001C41.066 13.6841 41.5833 14.2121 41.9566 14.8841C42.3406 15.5561 42.5326 16.3241 42.5326 17.1881C42.5326 18.0627 42.3353 18.8414 41.9406 19.5241C41.546 20.1961 41.018 20.7241 40.3566 21.1081C39.706 21.4921 38.9806 21.6841 38.1806 21.6841ZM38.1806 20.4841C38.7566 20.4841 39.274 20.3401 39.7326 20.0521C40.202 19.7641 40.57 19.3694 40.8366 18.8681C41.114 18.3667 41.2526 17.8067 41.2526 17.1881C41.2526 16.5694 41.114 16.0147 40.8366 15.5241C40.57 15.0334 40.202 14.6441 39.7326 14.3561C39.274 14.0681 38.7566 13.9241 38.1806 13.9241C37.6046 13.9241 37.082 14.0681 36.6126 14.3561C36.154 14.6441 35.786 15.0334 35.5086 15.5241C35.2313 16.0147 35.0926 16.5694 35.0926 17.1881C35.0926 17.8067 35.2313 18.3667 35.5086 18.8681C35.786 19.3694 36.154 19.7641 36.6126 20.0521C37.082 20.3401 37.6046 20.4841 38.1806 20.4841ZM48.665 21.6841C47.8543 21.6841 47.1183 21.4921 46.457 21.1081C45.7957 20.7134 45.2677 20.1801 44.873 19.5081C44.489 18.8254 44.297 18.0521 44.297 17.1881C44.297 16.3347 44.489 15.5721 44.873 14.9001C45.257 14.2281 45.7743 13.7001 46.425 13.3161C47.0863 12.9214 47.833 12.7241 48.665 12.7241C49.497 12.7241 50.2383 12.9161 50.889 13.3001C51.5503 13.6841 52.0677 14.2121 52.441 14.8841C52.825 15.5561 53.017 16.3241 53.017 17.1881C53.017 18.0627 52.8197 18.8414 52.425 19.5241C52.0303 20.1961 51.5023 20.7241 50.841 21.1081C50.1903 21.4921 49.465 21.6841 48.665 21.6841ZM48.665 20.4841C49.241 20.4841 49.7583 20.3401 50.217 20.0521C50.6863 19.7641 51.0543 19.3694 51.321 18.8681C51.5983 18.3667 51.737 17.8067 51.737 17.1881C51.737 16.5694 51.5983 16.0147 51.321 15.5241C51.0543 15.0334 50.6863 14.6441 50.217 14.3561C49.7583 14.0681 49.241 13.9241 48.665 13.9241C48.089 13.9241 47.5663 14.0681 47.097 14.3561C46.6383 14.6441 46.2703 15.0334 45.993 15.5241C45.7157 16.0147 45.577 16.5694 45.577 17.1881C45.577 17.8067 45.7157 18.3667 45.993 18.8681C46.2703 19.3694 46.6383 19.7641 47.097 20.0521C47.5663 20.3401 48.089 20.4841 48.665 20.4841Z" fill="white"/>
@@ -233,7 +241,6 @@
 </clipPath>
 </defs></svg></div></div>
 </div>
-<div id="bg-layer"></div>
 <div class="wrap">
   <div id="mobile-header">It's time to bring<br>the cows home!</div>
   <div id="outer">
@@ -357,7 +364,7 @@ function rescale(){
   const w = outer.getBoundingClientRect().width;
   const scale = w / CANVAS_W;
   if(window.innerWidth <= 600){
-    stage.style.transform = `translate(-50%, 0) scale(${scale})`;
+    stage.style.transform = `translate(-50%, 0) scale(${scale * 1.03})`;
   } else {
     stage.style.transform = `scale(${scale})`;
   }
